@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guy T Here for you</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <main class="wrap">
+        <header class="hero">
+            <p class="tag">Checkpoint Sanity Test Portal</p>
+            <h1>Guy T Here for you</h1>
+            <p class="sub">Submit your fix validation request and I will handle the sanity test flow.</p>
+        </header>
+
+        <section class="card">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="flash">{{ messages[0] }}</div>
+              {% endif %}
+            {% endwith %}
+
+            <form method="post" class="request-form">
+                <label for="machine_type">Machine</label>
+                <select id="machine_type" name="machine_type" required>
+                    <option value="">Select machine type</option>
+                    <option value="Physical">Physical</option>
+                    <option value="VM">VM</option>
+                </select>
+
+                <label for="main_version">Main version</label>
+                <select id="main_version" name="main_version" required>
+                    <option value="">Select version</option>
+                    <option value="R81.10">R81.10</option>
+                    <option value="R81.20">R81.20</option>
+                    <option value="R82">R82</option>
+                    <option value="R82.10">R82.10</option>
+                </select>
+
+                <label for="jhf">JHF</label>
+                <input id="jhf" name="jhf" type="text" placeholder="Enter JHF" required />
+
+                <label for="sr_number">SR number</label>
+                <input id="sr_number" name="sr_number" type="text" placeholder="Enter SR number" required />
+
+                <label for="task_number">TASK number</label>
+                <input id="task_number" name="task_number" type="text" placeholder="Enter TM/TASK number" required />
+
+                <label for="fix_path">Path to fix</label>
+                <input id="fix_path" name="fix_path" type="text" placeholder="Enter path to fix" required />
+
+                <label for="eta">ETA</label>
+                <input id="eta" name="eta" type="text" placeholder="How fast do you need it done?" required />
+
+                <button type="submit">Submit Request</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
