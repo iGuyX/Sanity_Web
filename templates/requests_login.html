@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Queue Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <main class="wrap">
+        <header class="hero">
+            <h1>Queue Access</h1>
+            <p class="sub">This tab is protected. Enter your queue password to continue.</p>
+            <a class="board-link" href="{{ url_for('index') }}">Back to Request Form</a>
+        </header>
+
+        <section class="card">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="flash">{{ messages[0] }}</div>
+              {% endif %}
+            {% endwith %}
+
+            <form method="post" class="request-form">
+                <div class="field-group full-span">
+                    <label for="board_password">Queue Password</label>
+                    <input id="board_password" name="board_password" type="password" placeholder="Enter queue password" required />
+                </div>
+                <button type="submit">Open Queue</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

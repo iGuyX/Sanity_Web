@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Requests</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <main class="wrap">
+        <header class="hero">
+            <h1>Open Requests</h1>
+            <p class="sub">Status view for open requests (New and In Progress).</p>
+            <a class="board-link" href="{{ url_for('index') }}">Back to Request Form</a>
+        </header>
+
+        <section class="card">
+            {% if tab_data %}
+                <div class="queue-tabs" role="tablist">
+                    {% for tab_name in tab_order %}
+                        <button
+                            type="button"
+                            class="queue-tab{% if loop.first %} active{% endif %}"
+                            data-tab-target="pending-tab-{{ tab_name|lower }}"
+                        >
+                            {{ tab_name }} ({{ tab_data.get(tab_name, [])|length }})
+                        </button>
+                    {% endfor %}
+                </div>
+
+                {% for tab_name in tab_order %}
+                    {% set rows = tab_data.get(tab_name, []) %}
+                    <section id="pending-tab-{{ tab_name|lower }}" class="tab-panel{% if loop.first %} active{% endif %}">
+                        {% if rows %}
+                            <div class="queue-list">
+                                {% for row in rows %}
+                                    <article class="queue-item">
+                                        <div class="queue-top">
+                                            <h3>SR {{ row['sr_number'] }} | {{ row['main_version'] }} {{ row['jhf'] }}</h3>
+                                            <p>Created: {{ row['created_at'] }}</p>
+                                        </div>
+
+                                        <div class="queue-meta">
+                                            <p><strong>Machine:</strong> {{ row['machine_type'] }}{% if row['appliance_model'] %} ({{ row['appliance_model'] }}){% endif %}</p>
+                                            <p><strong>TASK:</strong> {{ row['task_number'] }}</p>
+                                            <p><strong>ETA:</strong> {{ row['eta'] }}</p>
+                                            {% if row['done_at'] %}
+                                                <p><strong>Done at:</strong> {{ row['done_at'] }}</p>
+                                            {% endif %}
+                                            <p class="status-important status-{{ row['work_status']|lower|replace(' ', '-') }}"><strong>Status:</strong> {{ row['work_status'] }}</p>
+                                            {% if row['work_status'] == 'Done' and row['sanity_result'] == 'Sanity Failed' %}
+                                                <p class="result-failed"><strong>Sanity failed - please consult R&amp;D.</strong></p>
+                                                <p class="result-failed-reason"><strong>Reason:</strong> {{ row['failure_reason'] or 'No reason provided.' }}</p>
+                                            {% elif row['work_status'] == 'Done' and row['sanity_result'] == 'Sanity Passed' %}
+                                                <p class="result-passed"><strong>Sanity passed :)</strong></p>
+                                            {% endif %}
+                                        </div>
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="queue-empty">No requests in this tab.</p>
+                        {% endif %}
+                    </section>
+                {% endfor %}
+            {% else %}
+                <p>No requests right now.</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        const TAB_STORAGE_KEY = "pending_active_tab";
+        const tabButtons = document.querySelectorAll(".queue-tab");
+        const tabPanels = document.querySelectorAll(".tab-panel");
+
+        function activateTab(targetId) {
+            tabButtons.forEach((item) => item.classList.remove("active"));
+            tabPanels.forEach((panel) => panel.classList.remove("active"));
+
+            const targetButton = Array.from(tabButtons).find(
+                (button) => button.dataset.tabTarget === targetId
+            );
+            const targetPanel = document.getElementById(targetId);
+
+            if (targetButton && targetPanel) {
+                targetButton.classList.add("active");
+                targetPanel.classList.add("active");
+                window.location.hash = targetId;
+                localStorage.setItem(TAB_STORAGE_KEY, targetId);
+                return;
+            }
+
+            if (tabButtons[0] && tabPanels[0]) {
+                tabButtons[0].classList.add("active");
+                tabPanels[0].classList.add("active");
+                window.location.hash = tabButtons[0].dataset.tabTarget;
+                localStorage.setItem(TAB_STORAGE_KEY, tabButtons[0].dataset.tabTarget);
+            }
+        }
+
+        tabButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                activateTab(button.dataset.tabTarget);
+            });
+        });
+
+        const initialTarget =
+            window.location.hash.replace("#", "") || localStorage.getItem(TAB_STORAGE_KEY);
+        if (initialTarget) {
+            activateTab(initialTarget);
+        } else if (tabButtons[0]) {
+            activateTab(tabButtons[0].dataset.tabTarget);
+        }
+    </script>
+</body>
+</html>

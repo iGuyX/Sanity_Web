@@ -1,15 +1,15 @@
 :root {
-    --bg-1: #020305;
-    --bg-2: #0a1118;
-    --bg-3: #18060c;
-    --card: rgba(7, 14, 21, 0.84);
-    --panel: rgba(8, 18, 27, 0.88);
-    --neon-cyan: #6df7ff;
-    --neon-lime: #c3ff3d;
-    --neon-red: #ff4d6d;
-    --text: #edfdfd;
-    --muted: #89a8b5;
-    --danger: #ff6b86;
+    --bg-1: #081018;
+    --bg-2: #0f1c2a;
+    --bg-3: #112534;
+    --card: rgba(12, 24, 36, 0.9);
+    --panel: rgba(14, 29, 43, 0.92);
+    --neon-cyan: #61d9e8;
+    --neon-lime: #9fe56b;
+    --neon-red: #ef6f86;
+    --text: #eaf4fb;
+    --muted: #a8bfce;
+    --danger: #ff8ea3;
 }
 
 * {
@@ -20,12 +20,13 @@ body {
     margin: 0;
     min-height: 100vh;
     font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
     color: var(--text);
     background:
-        radial-gradient(circle at 14% 18%, rgba(255, 77, 109, 0.18), transparent 34%),
-        radial-gradient(circle at 80% 12%, rgba(109, 247, 255, 0.16), transparent 30%),
-        radial-gradient(circle at 72% 78%, rgba(195, 255, 61, 0.1), transparent 26%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2) 52%, var(--bg-3));
+        radial-gradient(circle at 14% 18%, rgba(97, 217, 232, 0.08), transparent 36%),
+        radial-gradient(circle at 80% 12%, rgba(159, 229, 107, 0.08), transparent 32%),
+        linear-gradient(140deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
     overflow-x: hidden;
 }
 
@@ -33,11 +34,11 @@ body {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    opacity: 0.18;
+    opacity: 0.1;
     background-image:
-        linear-gradient(rgba(109, 247, 255, 0.15) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(109, 247, 255, 0.15) 1px, transparent 1px);
-    background-size: 48px 48px;
+        linear-gradient(rgba(97, 217, 232, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(97, 217, 232, 0.08) 1px, transparent 1px);
+    background-size: 52px 52px;
 }
 
 .bg-scanlines {
@@ -49,23 +50,23 @@ body {
 }
 
 .wrap {
-    width: min(900px, 92%);
-    margin: 40px auto 56px;
+    width: min(980px, 94%);
+    margin: 34px auto 52px;
     position: relative;
     z-index: 1;
 }
 
 .hero {
     animation: fadeUp 0.8s ease-out;
-    padding: 32px 34px 26px;
-    border: 1px solid rgba(109, 247, 255, 0.2);
-    border-radius: 20px;
+    padding: 30px 32px 24px;
+    border: 1px solid rgba(138, 180, 208, 0.24);
+    border-radius: 16px;
     background:
-        linear-gradient(140deg, rgba(109, 247, 255, 0.07), transparent 35%),
-        linear-gradient(180deg, rgba(5, 10, 16, 0.9), rgba(9, 18, 27, 0.65));
+        linear-gradient(140deg, rgba(97, 217, 232, 0.05), transparent 35%),
+        linear-gradient(180deg, rgba(11, 22, 34, 0.95), rgba(13, 27, 40, 0.82));
     box-shadow:
-        0 0 0 1px rgba(255, 77, 109, 0.1) inset,
-        0 24px 55px rgba(0, 0, 0, 0.38);
+        0 0 0 1px rgba(97, 217, 232, 0.06) inset,
+        0 14px 36px rgba(0, 0, 0, 0.32);
 }
 
 .tag {
@@ -78,43 +79,63 @@ body {
 
 h1 {
     font-family: "Orbitron", sans-serif;
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(2.2rem, 4.6vw, 3.4rem);
     margin: 0;
     color: var(--neon-cyan);
-    text-shadow:
-        0 0 14px rgba(109, 247, 255, 0.55),
-        0 0 28px rgba(255, 77, 109, 0.15);
+    text-shadow: 0 0 10px rgba(97, 217, 232, 0.28);
 }
 
 .sub {
     margin-top: 10px;
-    color: #aacbd8;
-    max-width: 670px;
-    font-size: 1.05rem;
-    line-height: 1.5;
+    color: #b8cad8;
+    max-width: 720px;
+    font-size: 1.15rem;
+    line-height: 1.65;
+}
+
+.board-link {
+    display: inline-block;
+    margin-top: 14px;
+    color: var(--neon-cyan);
+    text-decoration: none;
+    border: 1px solid rgba(138, 180, 208, 0.4);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 700;
+    margin-right: 8px;
+    font-size: 1rem;
+}
+
+.board-link:hover {
+    border-color: var(--neon-lime);
+    color: var(--neon-lime);
+}
+
+.inline-form {
+    display: inline;
 }
 
 .card {
     margin-top: 24px;
     padding: 28px;
     background: var(--card);
-    border: 1px solid rgba(109, 247, 255, 0.24);
-    border-radius: 18px;
+    border: 1px solid rgba(138, 180, 208, 0.22);
+    border-radius: 16px;
     backdrop-filter: blur(8px);
     box-shadow:
-        0 0 0 1px rgba(255, 77, 109, 0.08) inset,
-        0 20px 45px rgba(0, 0, 0, 0.45);
+        0 0 0 1px rgba(138, 180, 208, 0.08) inset,
+        0 14px 34px rgba(0, 0, 0, 0.3);
     animation: fadeUp 1s ease-out;
 }
 
 .flash {
     margin-bottom: 14px;
-    padding: 10px 12px;
-    border: 1px solid var(--neon-lime);
-    color: var(--neon-lime);
+    padding: 12px 14px;
+    border: 1px solid rgba(159, 229, 107, 0.55);
+    color: #d8f7bf;
     border-radius: 8px;
     font-weight: 600;
-    background: rgba(195, 255, 61, 0.06);
+    background: rgba(159, 229, 107, 0.1);
 }
 
 .request-form {
@@ -139,31 +160,37 @@ h1 {
 
 .request-form label {
     font-weight: 700;
-    color: #d4fff8;
+    color: #d4e5f1;
     margin-top: 4px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .request-form input,
 .request-form select {
     width: 100%;
-    padding: 12px 13px;
+    padding: 13px 14px;
     border-radius: 10px;
-    border: 1px solid rgba(109, 247, 255, 0.3);
-    background: linear-gradient(180deg, rgba(3, 10, 16, 0.97), rgba(10, 18, 27, 0.94));
-    color: #f0fffe;
+    border: 1px solid rgba(138, 180, 208, 0.34);
+    background: linear-gradient(180deg, rgba(10, 21, 32, 0.96), rgba(14, 27, 40, 0.95));
+    color: #ecf6fd;
     font: inherit;
-    font-size: 1.05rem;
+    font-size: 1.12rem;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.request-form select,
+.queue-form select {
+    color-scheme: dark;
+    background-color: #07131d;
 }
 
 .request-form input:focus,
 .request-form select:focus {
     outline: none;
     border-color: var(--neon-cyan);
-    box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.2);
+    box-shadow: 0 0 0 3px rgba(97, 217, 232, 0.22);
 }
 
 .request-form select:disabled {
@@ -172,34 +199,225 @@ h1 {
 }
 
 .request-form select option {
-    background-color: #0a1520;
-    color: #edfdfd;
+    background-color: #08111a;
+    color: #f2ffff;
+}
+
+.queue-form select option {
+    background-color: #08111a;
+    color: #f2ffff;
 }
 
 .hint {
     color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.2;
+    font-size: 1rem;
+    line-height: 1.45;
 }
 
 .request-form button {
     margin-top: 12px;
     grid-column: 1 / -1;
     border: 0;
-    border-radius: 12px;
-    padding: 14px 18px;
+    border-radius: 10px;
+    padding: 15px 18px;
     font-family: "Orbitron", sans-serif;
     letter-spacing: 0.08em;
     cursor: pointer;
     color: #052120;
-    background: linear-gradient(90deg, var(--neon-red), var(--neon-cyan), var(--neon-lime));
+    background: linear-gradient(90deg, #5fcfe3, #9fe56b);
     font-weight: 700;
+    font-size: 1.08rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .request-form button:hover {
     transform: translateY(-1px);
-    box-shadow: 0 12px 26px rgba(109, 247, 255, 0.3);
+    box-shadow: 0 10px 22px rgba(97, 217, 232, 0.26);
+}
+
+.queue-list {
+    display: grid;
+    gap: 16px;
+}
+
+.queue-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.queue-tab {
+    border: 1px solid rgba(138, 180, 208, 0.36);
+    border-radius: 10px;
+    background: rgba(14, 28, 40, 0.84);
+    color: var(--text);
+    padding: 10px 14px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.queue-tab.active {
+    border-color: #9fe56b;
+    color: #cdeeb0;
+    background: rgba(159, 229, 107, 0.14);
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.status-section {
+    margin-top: 4px;
+}
+
+.status-section h2 {
+    display: none;
+    margin: 0 0 10px;
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+    color: var(--neon-lime);
+}
+
+.queue-empty {
+    margin: 4px 0 0;
+    color: var(--muted);
+}
+
+.queue-item {
+    border: 1px solid rgba(138, 180, 208, 0.24);
+    border-radius: 12px;
+    padding: 18px;
+    background: rgba(10, 22, 34, 0.82);
+}
+
+.queue-top h3 {
+    margin: 0;
+    font-size: 1.22rem;
+}
+
+.queue-top p {
+    margin: 6px 0 10px;
+    color: var(--muted);
+    font-size: 1.02rem;
+}
+
+.queue-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 14px;
+    margin-bottom: 10px;
+}
+
+.queue-meta p {
+    margin: 0;
+    font-size: 1.14rem;
+}
+
+.status-important {
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.status-done {
+    color: #74ff9e;
+}
+
+.result-failed {
+    grid-column: 1 / -1;
+    color: #ff7b90;
+    margin-top: 4px;
+}
+
+.result-failed-reason {
+    grid-column: 1 / -1;
+    color: #ffd2da;
+}
+
+.result-passed {
+    grid-column: 1 / -1;
+    color: #74ff9e;
+    margin-top: 4px;
+}
+
+.queue-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+}
+
+.queue-form label {
+    font-weight: 600;
+    margin-top: 2px;
+    font-size: 1rem;
+}
+
+.queue-form textarea,
+.queue-form input,
+.queue-form select {
+    width: 100%;
+    padding: 12px 13px;
+    border-radius: 8px;
+    border: 1px solid rgba(138, 180, 208, 0.34);
+    background: linear-gradient(180deg, rgba(10, 21, 32, 0.96), rgba(14, 27, 40, 0.95));
+    color: #ecf6fd;
+    font: inherit;
+    font-size: 1.1rem;
+}
+
+.queue-form textarea {
+    grid-column: 1 / -1;
+    resize: vertical;
+}
+
+.queue-form button {
+    margin-top: 4px;
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-family: "Orbitron", sans-serif;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    color: #052120;
+    background: linear-gradient(90deg, #5fcfe3, #9fe56b);
+    font-weight: 700;
+    font-size: 1.02rem;
+}
+
+.queue-form button:hover {
+    box-shadow: 0 10px 20px rgba(97, 217, 232, 0.22);
+}
+
+.failure-reason-group {
+    grid-column: 1 / -1;
+}
+
+.queue-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.delete-btn {
+    border: 1px solid rgba(239, 111, 134, 0.5);
+    border-radius: 10px;
+    padding: 12px 15px;
+    background: rgba(239, 111, 134, 0.18);
+    color: #ffe3e8;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.delete-btn:hover {
+    background: rgba(239, 111, 134, 0.3);
 }
 
 @keyframes fadeUp {
@@ -225,6 +443,11 @@ h1 {
     }
 
     .request-form {
+        grid-template-columns: 1fr;
+    }
+
+    .queue-meta,
+    .queue-form {
         grid-template-columns: 1fr;
     }
 

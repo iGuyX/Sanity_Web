@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Work Queue</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <main class="wrap">
+        <header class="hero">
+            <h1>Work Queue</h1>
+            <p class="sub">Track requests and write your answers directly in the portal.</p>
+            <a class="board-link" href="{{ url_for('index') }}">Back to Request Form</a>
+        </header>
+
+        <section class="card">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="flash">{{ messages[0] }}</div>
+              {% endif %}
+            {% endwith %}
+
+            {% if grouped_requests %}
+                <div class="queue-tabs" role="tablist">
+                    {% for status in status_order %}
+                        <button
+                            type="button"
+                            class="queue-tab{% if loop.first %} active{% endif %}"
+                            data-tab-target="tab-{{ status|lower|replace(' ', '-') }}"
+                        >
+                            {{ status }} ({{ grouped_requests.get(status, [])|length }})
+                        </button>
+                    {% endfor %}
+                </div>
+
+                {% for status in status_order %}
+                    {% set rows = grouped_requests.get(status, []) %}
+                    <section
+                        id="tab-{{ status|lower|replace(' ', '-') }}"
+                        class="status-section tab-panel{% if loop.first %} active{% endif %}"
+                    >
+                        {% if rows %}
+                            <div class="queue-list">
+                                {% for row in rows %}
+                                    <article class="queue-item">
+                                        <div class="queue-top">
+                                            <h3>Request #{{ row['id'] }} | SR {{ row['sr_number'] }} | {{ row['main_version'] }} {{ row['jhf'] }}</h3>
+                                            <p>Created: {{ row['created_at'] }}</p>
+                                        </div>
+
+                                        <div class="queue-meta">
+                                            <p><strong>Machine:</strong> {{ row['machine_type'] }}{% if row['appliance_model'] %} ({{ row['appliance_model'] }}){% endif %}</p>
+                                            <p><strong>TASK:</strong> {{ row['task_number'] }}</p>
+                                            <p><strong>ETA:</strong> {{ row['eta'] }}</p>
+                                            {% if row['done_at'] %}
+                                                <p><strong>Done at:</strong> {{ row['done_at'] }}</p>
+                                            {% endif %}
+                                            <p><strong>Path:</strong> {{ row['fix_path'] }}</p>
+                                        </div>
+
+                                        <form method="post" action="{{ url_for('requests_update') }}" class="queue-form">
+                                            <input type="hidden" name="request_id" value="{{ row['id'] }}" />
+
+                                            <label for="work_status_{{ row['id'] }}">Queue Status</label>
+                                            <select id="work_status_{{ row['id'] }}" name="work_status" required>
+                                                {% for queue_status in ['New', 'In Progress', 'Done'] %}
+                                                    <option value="{{ queue_status }}" {% if row['work_status'] == queue_status %}selected{% endif %}>{{ queue_status }}</option>
+                                                {% endfor %}
+                                            </select>
+
+                                            <label for="sanity_result_{{ row['id'] }}">Findings / Notes</label>
+                                            <select id="sanity_result_{{ row['id'] }}" name="sanity_result" class="sanity-result-select" data-id="{{ row['id'] }}">
+                                                <option value="" {% if row['sanity_result'] == '' %}selected{% endif %}>Select result</option>
+                                                <option value="Sanity Passed" {% if row['sanity_result'] == 'Sanity Passed' %}selected{% endif %}>Sanity Passed</option>
+                                                <option value="Sanity Failed" {% if row['sanity_result'] == 'Sanity Failed' %}selected{% endif %}>Sanity Failed</option>
+                                            </select>
+
+                                            <div id="failure_reason_group_{{ row['id'] }}" class="failure-reason-group {% if row['sanity_result'] != 'Sanity Failed' %}hidden{% endif %}">
+                                                <label for="failure_reason_{{ row['id'] }}">Failure Reason</label>
+                                                <textarea id="failure_reason_{{ row['id'] }}" name="failure_reason" rows="4" placeholder="Describe why sanity failed">{{ row['failure_reason'] }}</textarea>
+                                            </div>
+
+                                            <button type="submit">Save Work Update</button>
+                                        </form>
+                                        <div class="queue-actions">
+                                            <form method="post" action="{{ url_for('requests_delete') }}" class="inline-form" onsubmit="return confirm('Delete this task?');">
+                                                <input type="hidden" name="request_id" value="{{ row['id'] }}" />
+                                                <button type="submit" class="delete-btn">Delete Task</button>
+                                            </form>
+                                        </div>
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="queue-empty">No tasks in this queue.</p>
+                        {% endif %}
+                    </section>
+                {% endfor %}
+            {% else %}
+                <p>No requests yet.</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        function syncFailureReasonVisibility(selectElement) {
+            const id = selectElement.dataset.id;
+            const group = document.getElementById(`failure_reason_group_${id}`);
+            if (!group) {
+                return;
+            }
+            group.classList.toggle("hidden", selectElement.value !== "Sanity Failed");
+        }
+
+        document.querySelectorAll(".sanity-result-select").forEach((selectElement) => {
+            selectElement.addEventListener("change", () => syncFailureReasonVisibility(selectElement));
+            syncFailureReasonVisibility(selectElement);
+        });
+
+        const TAB_STORAGE_KEY = "requests_active_tab";
+        const tabButtons = document.querySelectorAll(".queue-tab");
+        const tabPanels = document.querySelectorAll(".tab-panel");
+
+        function activateTab(targetId) {
+            tabButtons.forEach((item) => item.classList.remove("active"));
+            tabPanels.forEach((panel) => panel.classList.remove("active"));
+
+            const targetButton = Array.from(tabButtons).find(
+                (button) => button.dataset.tabTarget === targetId
+            );
+            const targetPanel = document.getElementById(targetId);
+
+            if (targetButton && targetPanel) {
+                targetButton.classList.add("active");
+                targetPanel.classList.add("active");
+                window.location.hash = targetId;
+                localStorage.setItem(TAB_STORAGE_KEY, targetId);
+                return;
+            }
+
+            if (tabButtons[0] && tabPanels[0]) {
+                tabButtons[0].classList.add("active");
+                tabPanels[0].classList.add("active");
+                window.location.hash = tabButtons[0].dataset.tabTarget;
+                localStorage.setItem(TAB_STORAGE_KEY, tabButtons[0].dataset.tabTarget);
+            }
+        }
+
+        tabButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                activateTab(button.dataset.tabTarget);
+            });
+        });
+
+        const initialTarget =
+            window.location.hash.replace("#", "") || localStorage.getItem(TAB_STORAGE_KEY);
+        if (initialTarget) {
+            activateTab(initialTarget);
+        } else if (tabButtons[0]) {
+            activateTab(tabButtons[0].dataset.tabTarget);
+        }
+    </script>
+</body>
+</html>
