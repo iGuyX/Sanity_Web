@@ -16,6 +16,7 @@ def init_db() -> None:
         CREATE TABLE IF NOT EXISTS help_requests (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             machine_type TEXT NOT NULL,
+            appliance_model TEXT NOT NULL DEFAULT '',
             main_version TEXT NOT NULL,
             jhf TEXT NOT NULL,
             sr_number TEXT NOT NULL,
@@ -26,6 +27,15 @@ def init_db() -> None:
         )
         """
     )
+
+    existing_columns = {
+        row[1] for row in cur.execute("PRAGMA table_info(help_requests)").fetchall()
+    }
+    if "appliance_model" not in existing_columns:
+        cur.execute(
+            "ALTER TABLE help_requests ADD COLUMN appliance_model TEXT NOT NULL DEFAULT ''"
+        )
+
     conn.commit()
     conn.close()
 
@@ -37,6 +47,7 @@ def save_request(payload: dict) -> None:
         """
         INSERT INTO help_requests (
             machine_type,
+            appliance_model,
             main_version,
             jhf,
             sr_number,
@@ -45,10 +56,11 @@ def save_request(payload: dict) -> None:
             eta,
             created_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             payload["machine_type"],
+            payload["appliance_model"],
             payload["main_version"],
             payload["jhf"],
             payload["sr_number"],
@@ -67,6 +79,7 @@ def index():
     if request.method == "POST":
         payload = {
             "machine_type": request.form.get("machine_type", "").strip(),
+            "appliance_model": request.form.get("appliance_model", "").strip(),
             "main_version": request.form.get("main_version", "").strip(),
             "jhf": request.form.get("jhf", "").strip(),
             "sr_number": request.form.get("sr_number", "").strip(),
@@ -75,7 +88,19 @@ def index():
             "eta": request.form.get("eta", "").strip(),
         }
 
-        if not all(payload.values()):
+        required_fields = [
+            payload["machine_type"],
+            payload["main_version"],
+            payload["jhf"],
+            payload["sr_number"],
+            payload["task_number"],
+            payload["fix_path"],
+            payload["eta"],
+        ]
+        if payload["machine_type"] == "Physical":
+            required_fields.append(payload["appliance_model"])
+
+        if not all(required_fields):
             flash("Please fill in all fields.")
             return redirect(url_for("index"))
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Guy T Here for you</title>
+    <title>Let Me Sanity Your Fixes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,11 +11,14 @@
 </head>
 <body>
     <div class="bg-grid"></div>
+    <div class="bg-scanlines"></div>
+    <div class="bg-orb bg-orb-left"></div>
+    <div class="bg-orb bg-orb-right"></div>
+    <div class="bg-orb bg-orb-mid"></div>
     <main class="wrap">
         <header class="hero">
-            <p class="tag">Checkpoint Sanity Test Portal</p>
-            <h1>Guy T Here for you</h1>
-            <p class="sub">Submit your fix validation request and I will handle the sanity test flow.</p>
+            <h1>Let Me Sanity Your Fixes</h1>
+            <p class="sub">Submit your fix for a sanity validation run — pick the exact version, take, and appliance details, and I will handle the rest.</p>
         </header>
 
         <section class="card">
@@ -26,40 +29,138 @@
             {% endwith %}
 
             <form method="post" class="request-form">
-                <label for="machine_type">Machine</label>
-                <select id="machine_type" name="machine_type" required>
-                    <option value="">Select machine type</option>
-                    <option value="Physical">Physical</option>
-                    <option value="VM">VM</option>
-                </select>
+                <div class="field-group">
+                    <label for="machine_type">Machine</label>
+                    <select id="machine_type" name="machine_type" required>
+                        <option value="">Select machine type</option>
+                        <option value="Physical">Physical</option>
+                        <option value="VM">VM</option>
+                    </select>
+                </div>
 
-                <label for="main_version">Main version</label>
-                <select id="main_version" name="main_version" required>
-                    <option value="">Select version</option>
-                    <option value="R81.10">R81.10</option>
-                    <option value="R81.20">R81.20</option>
-                    <option value="R82">R82</option>
-                    <option value="R82.10">R82.10</option>
-                </select>
+                <div class="field-group hidden" id="appliance_model_group">
+                    <label for="appliance_model">Appliance model</label>
+                    <input id="appliance_model" name="appliance_model" type="text" placeholder="Enter appliance model" />
+                </div>
 
-                <label for="jhf">JHF</label>
-                <input id="jhf" name="jhf" type="text" placeholder="Enter JHF" required />
+                <div class="field-group">
+                    <label for="main_version">Main version</label>
+                    <select id="main_version" name="main_version" required>
+                        <option value="">Select version</option>
+                        <option value="R81.10">R81.10</option>
+                        <option value="R81.20">R81.20</option>
+                        <option value="R82">R82</option>
+                        <option value="R82.10">R82.10</option>
+                    </select>
+                </div>
 
-                <label for="sr_number">SR number</label>
-                <input id="sr_number" name="sr_number" type="text" placeholder="Enter SR number" required />
+                <div class="field-group">
+                    <label for="jhf">JHF</label>
+                    <select id="jhf" name="jhf" required disabled>
+                        <option value="">Select main version first</option>
+                    </select>
+                    <small class="hint">Only the approved takes for the selected version are shown.</small>
+                </div>
 
-                <label for="task_number">TASK number</label>
-                <input id="task_number" name="task_number" type="text" placeholder="Enter TM/TASK number" required />
+                <div class="field-group">
+                    <label for="sr_number">SR number</label>
+                    <input id="sr_number" name="sr_number" type="text" placeholder="Enter SR number" required />
+                </div>
 
-                <label for="fix_path">Path to fix</label>
-                <input id="fix_path" name="fix_path" type="text" placeholder="Enter path to fix" required />
+                <div class="field-group">
+                    <label for="task_number">TASK number</label>
+                    <input id="task_number" name="task_number" type="text" placeholder="Enter TM/TASK number" required />
+                </div>
 
-                <label for="eta">ETA</label>
-                <input id="eta" name="eta" type="text" placeholder="How fast do you need it done?" required />
+                <div class="field-group full-span">
+                    <label for="fix_path">Path to fix</label>
+                    <input id="fix_path" name="fix_path" type="text" placeholder="Enter path to fix" required />
+                </div>
+
+                <div class="field-group full-span">
+                    <label for="eta">ETA</label>
+                    <select id="eta" name="eta" required>
+                        <option value="">Select ETA</option>
+                        <option value="Until today">Until today</option>
+                        <option value="Until tomorrow">Until tomorrow</option>
+                        <option value="Can wait for next week">Can wait for next week</option>
+                    </select>
+
+                </div>
 
                 <button type="submit">Submit Request</button>
             </form>
         </section>
     </main>
+
+    <script>
+        const jhfByVersion = {
+            "R81.10": [
+                "Take 181", "Take 177", "Take 174", "Take 173", "Take 172", "Take 171",
+                "Take 170", "Take 169", "Take 165", "Take 158", "Take 156", "Take 152",
+                "Take 150", "Take 141", "Take 139", "Take 135", "Take 132", "Take 131",
+                "Take 130", "Take 129", "Take 128", "Take 113", "Take 110", "Take 109",
+                "Take 107", "Take 106", "Take 95", "Take 94", "Take 93", "Take 87",
+                "Take 85", "Take 82", "Take 81", "Take 79", "Take 78", "Take 75",
+                "Take 66", "Take 61", "Take 55", "Take 45", "Take 44", "Take 38",
+                "Take 30", "Take 22", "Take 14", "Take 9"
+            ],
+            "R81.20": [
+                "Take 126", "Take 122", "Take 120", "Take 119", "Take 118", "Take 115",
+                "Take 113", "Take 111", "Take 105", "Take 103", "Take 101", "Take 99",
+                "Take 98", "Take 96", "Take 92", "Take 90", "Take 89", "Take 84",
+                "Take 79", "Take 76", "Take 70", "Take 65", "Take 54", "Take 53",
+                "Take 45", "Take 43", "Take 41", "Take 38", "Take 26", "Take 24",
+                "Take 14", "Take 10", "Take 8"
+            ],
+            "R82": [
+                "Take 73", "Take 60", "Take 44", "Take 43", "Take 41", "Take 39",
+                "Take 36", "Take 34", "Take 33", "Take 25", "Take 19", "Take 18",
+                "Take 14", "Take 12", "Take 10"
+            ],
+            "R82.10": ["T6"]
+        };
+
+        const machineTypeSelect = document.getElementById("machine_type");
+        const applianceModelGroup = document.getElementById("appliance_model_group");
+        const applianceModelInput = document.getElementById("appliance_model");
+        const mainVersionSelect = document.getElementById("main_version");
+        const jhfSelect = document.getElementById("jhf");
+
+        function syncMachineFields() {
+            const isPhysical = machineTypeSelect.value === "Physical";
+            applianceModelGroup.classList.toggle("hidden", !isPhysical);
+            applianceModelInput.required = isPhysical;
+            if (!isPhysical) {
+                applianceModelInput.value = "";
+            }
+        }
+
+        function syncJhfOptions() {
+            const options = jhfByVersion[mainVersionSelect.value] || [];
+            jhfSelect.innerHTML = "";
+
+            const placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.textContent = options.length ? "Select JHF take" : "Select main version first";
+            jhfSelect.appendChild(placeholder);
+
+            options.forEach((optionValue) => {
+                const option = document.createElement("option");
+                option.value = optionValue;
+                option.textContent = optionValue;
+                jhfSelect.appendChild(option);
+            });
+
+            jhfSelect.disabled = options.length === 0;
+            jhfSelect.value = "";
+        }
+
+        machineTypeSelect.addEventListener("change", syncMachineFields);
+        mainVersionSelect.addEventListener("change", syncJhfOptions);
+
+        syncMachineFields();
+        syncJhfOptions();
+    </script>
 </body>
 </html>
