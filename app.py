@@ -41,7 +41,7 @@ def save_request(payload: dict) -> None:
             jhf,
             sr_number,
             task_number,
-            fix_path,            git remote get-url origin
+            fix_path,
             eta,
             created_at
         )
@@ -86,6 +86,8 @@ def index():
     return render_template("index.html")
 
 
+init_db()
+
+
 if __name__ == "__main__":
-    init_db()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
