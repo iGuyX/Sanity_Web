@@ -180,6 +180,57 @@ def get_pending_tab_data() -> tuple[dict[str, list[sqlite3.Row]], list[str]]:
     return tab_data, ["Open", "Done"]
 
 
+def get_statistics() -> dict:
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    total_requests = cur.execute("SELECT COUNT(*) FROM help_requests").fetchone()[0]
+    open_requests = cur.execute(
+        "SELECT COUNT(*) FROM help_requests WHERE work_status IN ('New', 'In Progress')"
+    ).fetchone()[0]
+    done_requests = cur.execute(
+        "SELECT COUNT(*) FROM help_requests WHERE work_status = 'Done'"
+    ).fetchone()[0]
+    done_today = cur.execute(
+        "SELECT COUNT(*) FROM help_requests WHERE done_at != '' AND date(done_at) = date('now', 'localtime')"
+    ).fetchone()[0]
+    sanity_passed = cur.execute(
+        "SELECT COUNT(*) FROM help_requests WHERE sanity_result = 'Sanity Passed'"
+    ).fetchone()[0]
+    sanity_failed = cur.execute(
+        "SELECT COUNT(*) FROM help_requests WHERE sanity_result = 'Sanity Failed'"
+    ).fetchone()[0]
+
+    status_counts = {
+        row["work_status"]: row["total"]
+        for row in cur.execute(
+            "SELECT work_status, COUNT(*) AS total FROM help_requests GROUP BY work_status"
+        ).fetchall()
+    }
+
+    machine_counts = cur.execute(
+        """
+        SELECT machine_type, COUNT(*) AS total
+        FROM help_requests
+        GROUP BY machine_type
+        ORDER BY total DESC, machine_type ASC
+        """
+    ).fetchall()
+
+    conn.close()
+    return {
+        "total_requests": total_requests,
+        "open_requests": open_requests,
+        "done_requests": done_requests,
+        "done_today": done_today,
+        "sanity_passed": sanity_passed,
+        "sanity_failed": sanity_failed,
+        "status_counts": status_counts,
+        "machine_counts": machine_counts,
+    }
+
+
 def update_request_response(
     request_id: int,
     work_status: str,
@@ -267,7 +318,8 @@ def index():
         flash("Request submitted successfully.")
         return redirect(url_for("index"))
 
-    return render_template("index.html")
+    stats = get_statistics()
+    return render_template("index.html", stats=stats)
 
 
 @app.route("/pending", methods=["GET"])

@@ -21,6 +21,31 @@
             <p class="sub">Submit your fix for a sanity validation run — pick the exact version, take, and appliance details, and I will handle the rest.</p>
             <a class="board-link" href="{{ url_for('requests_board') }}">Open Work Queue</a>
             <a class="board-link" href="{{ url_for('pending_view') }}">Open Requests Status</a>
+
+            <div class="inline-stats">
+                <div class="stats-grid">
+                    <article class="stat-card">
+                        <p class="stat-label">Total</p>
+                        <p class="stat-value">{{ stats.total_requests }}</p>
+                    </article>
+                    <article class="stat-card">
+                        <p class="stat-label">Open</p>
+                        <p class="stat-value">{{ stats.open_requests }}</p>
+                    </article>
+                    <article class="stat-card">
+                        <p class="stat-label">Done</p>
+                        <p class="stat-value">{{ stats.done_requests }}</p>
+                    </article>
+                    <article class="stat-card">
+                        <p class="stat-label">Passed</p>
+                        <p class="stat-value">{{ stats.sanity_passed }}</p>
+                    </article>
+                    <article class="stat-card">
+                        <p class="stat-label">Failed</p>
+                        <p class="stat-value">{{ stats.sanity_failed }}</p>
+                    </article>
+                </div>
+            </div>
         </header>
 
         <section class="card">
@@ -31,13 +56,22 @@
             {% endwith %}
 
             <form method="post" class="request-form">
+                <input type="hidden" id="machine_type" name="machine_type" required />
                 <div class="field-group">
-                    <label for="machine_type">Machine</label>
-                    <select id="machine_type" name="machine_type" required>
+                    <label for="machine_select">Machine</label>
+                    <select id="machine_select">
                         <option value="">Select machine type</option>
                         <option value="Physical">Physical</option>
                         <option value="VM">VM</option>
                     </select>
+                </div>
+                <div class="field-group">
+                    <label>&nbsp;</label>
+                    <div class="radio-group">
+                        <button type="button" class="machine-pill" data-value="VSX" aria-pressed="false">VSX</button>
+                        <button type="button" class="machine-pill" data-value="Maestro" aria-pressed="false">Maestro</button>
+                        <button type="button" class="machine-pill" data-value="ElasticXL" aria-pressed="false">ElasticXL</button>
+                    </div>
                 </div>
 
                 <div class="field-group hidden" id="appliance_model_group">
@@ -123,7 +157,40 @@
             "R82.10": ["T6"]
         };
 
-        const machineTypeSelect = document.getElementById("machine_type");
+        const machineHidden = document.getElementById("machine_type");
+        const machineSelect = document.getElementById("machine_select");
+        const machinePills = document.querySelectorAll(".machine-pill");
+        const machineTypeSelect = { get value() { return machineHidden.value; } };
+
+        function syncMachineHiddenFromPills() {
+            const selectedValues = Array.from(machinePills)
+                .filter((pill) => pill.classList.contains("active"))
+                .map((pill) => pill.dataset.value);
+            machineHidden.value = selectedValues.join(", ");
+        }
+
+        machineSelect.addEventListener("change", function () {
+            if (this.value) {
+                machineHidden.value = this.value;
+                machinePills.forEach((pill) => {
+                    pill.classList.remove("active");
+                    pill.setAttribute("aria-pressed", "false");
+                });
+            } else {
+                machineHidden.value = "";
+            }
+            syncMachineFields();
+        });
+
+        machinePills.forEach(pill => {
+            pill.addEventListener("click", function () {
+                this.classList.toggle("active");
+                this.setAttribute("aria-pressed", this.classList.contains("active") ? "true" : "false");
+                machineSelect.value = "";
+                syncMachineHiddenFromPills();
+                syncMachineFields();
+            });
+        });
         const applianceModelGroup = document.getElementById("appliance_model_group");
         const applianceModelInput = document.getElementById("appliance_model");
         const mainVersionSelect = document.getElementById("main_version");
@@ -158,7 +225,6 @@
             jhfSelect.value = "";
         }
 
-        machineTypeSelect.addEventListener("change", syncMachineFields);
         mainVersionSelect.addEventListener("change", syncJhfOptions);
 
         syncMachineFields();
