@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guy T Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body class="portal-theme">
+    <div class="bg-grid"></div>
+    <div class="portal-noise"></div>
+    <header class="portal-topbar">
+        <div class="portal-brand">ITAC High-End Portal</div>
+    </header>
+
+    <main class="portal-wrap">
+        <section class="portal-shell">
+            <nav class="portal-tabs" aria-label="Portal sections">
+                <a class="portal-tab active" href="{{ url_for('sanity_page') }}">
+                    <span class="portal-tab-icon">S</span>
+                    <span class="portal-tab-label">Sanity Test Requests</span>
+                    <span class="portal-tab-badge">NEW</span>
+                </a>
+                <div class="portal-tab portal-tab-disabled" aria-disabled="true">
+                    <span class="portal-tab-icon">A</span>
+                    <span class="portal-tab-label">Soon...</span>
+                </div>
+                <div class="portal-tab portal-tab-disabled" aria-disabled="true">
+                    <span class="portal-tab-icon">B</span>
+                    <span class="portal-tab-label">Soon...</span>
+                </div>
+                <div class="portal-tab portal-tab-disabled" aria-disabled="true">
+                    <span class="portal-tab-icon">C</span>
+                    <span class="portal-tab-label">Soon...</span>
+                </div>
+                <div class="portal-tab portal-tab-disabled" aria-disabled="true">
+                    <span class="portal-tab-icon">D</span>
+                    <span class="portal-tab-label">Soon...</span>
+                </div>
+            </nav>
+        </section>
+    </main>
+</body>
+</html>

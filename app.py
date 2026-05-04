@@ -1,11 +1,13 @@
 from datetime import datetime
 import os
+from pathlib import Path
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change-this-secret-key")
-DB_PATH = "requests.db"
+DB_PATH = os.environ.get("DB_PATH", str(Path(__file__).with_name("requests.db")))
+Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
 REQUESTS_BOARD_PASSWORD = os.environ.get("REQUESTS_BOARD_PASSWORD", "Fxp12345")
 
 STATUS_ORDER = ["New", "In Progress", "Done"]
@@ -282,8 +284,14 @@ def is_board_authorized() -> bool:
     return session.get("board_authed", False)
 
 
-@app.route("/", methods=["GET", "POST"])
-def index():
+@app.route("/", methods=["GET"])
+def portal_home():
+    stats = get_statistics()
+    return render_template("portal.html", stats=stats)
+
+
+@app.route("/sanity", methods=["GET", "POST"])
+def sanity_page():
     session.pop("board_authed", None)
 
     if request.method == "POST":
@@ -312,11 +320,11 @@ def index():
 
         if not all(required_fields):
             flash("Please fill in all fields.")
-            return redirect(url_for("index"))
+            return redirect(url_for("sanity_page"))
 
         save_request(payload)
         flash("Request submitted successfully.")
-        return redirect(url_for("index"))
+        return redirect(url_for("sanity_page"))
 
     stats = get_statistics()
     return render_template("index.html", stats=stats)

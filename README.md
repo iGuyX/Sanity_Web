@@ -37,3 +37,5 @@ Cybersecurity-themed internal request portal for sanity testing fixes in Check P
 ## Notes
 - Allow inbound TCP port `5000` in Windows Firewall if needed.
 - Change `SECRET_KEY` in `app.py` before production use.
+- Tasks are deleted only by the manual **Delete Task** button in the Work Queue.
+- For Render deployment, set `DB_PATH` to a persistent disk mount (example: `/var/data/requests.db`) so queue data survives idle/restart cycles.
